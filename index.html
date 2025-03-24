@@ -52,7 +52,7 @@
           </select>
         </div>
         <div class="required">
-          <label for="trucks">Informe seu Cargo <span>Required</span></label>
+          <label for="trucks">Quantidade de caminhões <span>Required</span></label>
           <select name="trucks" id="trucks" required>
             <option value="De 1 a 10">De 1 a 10</option>
             <option value="De 11 a 25">De 11 a 25</option>
@@ -105,10 +105,56 @@
     </div>
   </div>
   <script>
-    document.addEventListener("DOMContentLoaded",function(){const estadoSelect=document.querySelector('#state');const cidadeSelect=document.querySelector('#city');const estadosIBGE={"AC":12,"AL":27,"AP":16,"AM":13,"BA":29,"CE":23,"DF":53,"ES":32,"GO":52,"MA":21,"MT":51,"MS":50,"MG":31,"PA":15,"PB":25,"PR":41,"PE":26,"PI":22,"RJ":33,"RN":24,"RS":43,"RO":11,"RR":14,"SC":42,"SP":35,"SE":28,"TO":17};estadoSelect.addEventListener("change",function(){const estadoSelecionado=estadoSelect.value;const estadoCodigo=estadosIBGE[estadoSelecionado];if(!estadoCodigo){cidadeSelect.innerHTML='<option value="">Selecione um estado primeiro</option>';return}
-    const url=`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estadoCodigo}/municipios`;cidadeSelect.innerHTML='<option value="">Carregando cidades...</option>';fetch(url).then(response=>response.json()).then(data=>{cidadeSelect.innerHTML='<option value="">Selecione a cidade</option>';data.forEach(municipio=>{const option=document.createElement("option");option.value=municipio.nome;option.textContent=municipio.nome;cidadeSelect.appendChild(option)})}).catch(error=>{console.error("Erro ao carregar cidades:",error);cidadeSelect.innerHTML='<option value="">Erro ao carregar</option>'})})})
-  </script>
-  <script>
+const pxCities = {
+  statesCodes: {
+    AC: 12, AL: 27, AP: 16, AM: 13, BA: 29, CE: 23, DF: 53, ES: 32,
+    GO: 52, MA: 21, MT: 51, MS: 50, MG: 31, PA: 15, PB: 25, PR: 41,
+    PE: 26, PI: 22, RJ: 33, RN: 24, RS: 43, RO: 11, RR: 14, SC: 42,
+    SP: 35, SE: 28, TO: 17
+  },
+  stateSelect: document.querySelector('#state'),
+  citySelect: document.querySelector('#city'),
+
+  init: function () {
+    this.citySelect.disabled = true;
+    if (this.stateSelect && this.citySelect) {
+      this.stateSelect.addEventListener('change', () => {
+        this.loadCities(this.stateSelect.value, this.citySelect);
+      });
+    }
+  },
+
+  loadCities: function (state, citySelect) {
+    const stateCode = this.statesCodes[state];
+
+    if (!stateCode) {
+      citySelect.innerHTML = '<option value="">Selecione um estado primeiro</option>';
+      return;
+    }
+
+    const url = `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${stateCode}/municipios`;
+    citySelect.innerHTML = '<option value="">Carregando cidades...</option>';
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        citySelect.innerHTML = '<option value="">Selecione a cidade</option>';
+        data.forEach(city => {
+          const option = document.createElement('option');
+          option.value = city.nome;
+          option.textContent = city.nome;
+          citySelect.appendChild(option);
+          this.citySelect.disabled = false;
+          this.citySelect.focus();
+        });
+
+      })
+      .catch(error => {
+        console.error('Erro ao carregar cidades:', error);
+        citySelect.innerHTML = '<option value="">Erro ao carregar</option>';
+      });
+  }
+};
 const pxMask = {
 	init: function () {
 		const fields = document.querySelectorAll( '[data-mask]' );
@@ -194,7 +240,7 @@ const pxMask = {
 		} );
 	},
 };
-
+document.addEventListener( 'DOMContentLoaded', () => pxCities.init() );
 document.addEventListener( 'DOMContentLoaded', () => pxMask.init() );
   </script>
 </body>
