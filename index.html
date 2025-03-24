@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,7 +31,7 @@
         </div>
         <div class="required">
           <label for="phone">Telefone (com DDD) <span>Required</span></label>
-          <input type="tel" name="phone" id="phone" placeholder="Telefone (com DDD)" required maxlength="15" autocomplete="tel-national">
+          <input type="tel" name="phone" id="phone" placeholder="Telefone (com DDD)" required maxlength="15" autocomplete="tel-national" data-mask="phone-br">
         </div>
         <div class="required">
           <label for="organization">Empresa <span>Required</span></label>
@@ -103,6 +103,95 @@
   <script>
     document.addEventListener("DOMContentLoaded",function(){const estadoSelect=document.querySelector('#state');const cidadeSelect=document.querySelector('#city');const estadosIBGE={"AC":12,"AL":27,"AP":16,"AM":13,"BA":29,"CE":23,"DF":53,"ES":32,"GO":52,"MA":21,"MT":51,"MS":50,"MG":31,"PA":15,"PB":25,"PR":41,"PE":26,"PI":22,"RJ":33,"RN":24,"RS":43,"RO":11,"RR":14,"SC":42,"SP":35,"SE":28,"TO":17};estadoSelect.addEventListener("change",function(){const estadoSelecionado=estadoSelect.value;const estadoCodigo=estadosIBGE[estadoSelecionado];if(!estadoCodigo){cidadeSelect.innerHTML='<option value="">Selecione um estado primeiro</option>';return}
     const url=`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estadoCodigo}/municipios`;cidadeSelect.innerHTML='<option value="">Carregando cidades...</option>';fetch(url).then(response=>response.json()).then(data=>{cidadeSelect.innerHTML='<option value="">Selecione a cidade</option>';data.forEach(municipio=>{const option=document.createElement("option");option.value=municipio.nome;option.textContent=municipio.nome;cidadeSelect.appendChild(option)})}).catch(error=>{console.error("Erro ao carregar cidades:",error);cidadeSelect.innerHTML='<option value="">Erro ao carregar</option>'})})})
+  </script>
+  <script>
+const pxMask = {
+	init: function () {
+		const fields = document.querySelectorAll( '[data-mask]' );
+		fields.forEach( ( field ) => {
+			const mask = field.dataset.mask;
+			this.mask( field, mask );
+		} );
+	},
+	format: function ( value, mask ) {
+		let formated = value;
+		switch ( mask ) {
+			case 'phone-br':
+				formated = this.formatPhoneBr( value );
+				break;
+		}
+		return formated;
+	},
+	formatPhoneBr: function ( value ) {
+		value = value.replace( /^\+55/, '' ).replace( /\D/g, '' );
+		if ( value.length > 11 ) {
+			value = value.slice( 0, 11 );
+		}
+
+		let formatted = '';
+		if ( value.length > 0 ) {
+			formatted = '(' + value.substring( 0, 1 );
+		}
+
+		if ( value.length >= 2 ) {
+			formatted += value.substring( 1, 2 ) + ')';
+		}
+
+		let isMobile = false;
+		let slicePoint = 6;
+
+		if ( value.length >= 3 ) {
+			isMobile = 9 === parseInt( value[ 2 ] );
+			slicePoint = isMobile || value.length > 10 ? 7 : 6;
+			formatted += ' ' + value.substring( 2, slicePoint );
+		}
+
+		if ( value.length >= slicePoint ) {
+			formatted += '-' + value.substring( slicePoint, value.length );
+		}
+		return formatted;
+	},
+	mask: function ( selector, mask ) {
+		let elements;
+		if ( 'string' === typeof selector ) {
+			elements = document.querySelectorAll( selector );
+		} else {
+			elements = [ selector ];
+		}
+
+		elements.forEach( ( el ) => {
+			if ( 'phone-br' === mask ) {
+				const phoneField = el;
+				if ( phoneField ) {
+					phoneField.addEventListener( 'input', ( e ) => {
+						e.target.value = this.format( e.target.value, mask );
+					} );
+
+					phoneField.addEventListener( 'keydown', ( e ) => {
+						if ( e.key === 'Backspace' ) {
+							const selectionStart = phoneField.selectionStart;
+							const selectionEnd = phoneField.selectionEnd;
+							if ( selectionStart !== selectionEnd ) {
+								phoneField.value = '';
+								e.preventDefault();
+								return;
+							}
+							phoneField.value = this.format(
+								phoneField.value
+									.replace( /\D/g, '' )
+									.slice( 0, -1 ),
+                mask
+							);
+							e.preventDefault();
+						}
+					} );
+				}
+			}
+		} );
+	},
+};
+
+document.addEventListener( 'DOMContentLoaded', () => pxMask.init() );
   </script>
 </body>
 </html>
