@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="./style.css">
+    <link rel="preload" href="./fonts/poppins/poppins-regular.woff2?v=1" as="font" type="font/woff2" crossorigin="anonymous">
+    <link rel="preload" href="./fonts/poppins/poppins-bold.woff2?v=1" as="font" type="font/woff2" crossorigin="anonymous">
     <style type="text/css">
-    @font-face{font-family:Poppins;font-style:normal;font-weight:400;font-display:fallback;src:url('./fonts/poppins/poppins-regular.woff2') format('woff2');font-stretch:normal;}
-    @font-face{font-family:Poppins;font-style:normal;font-weight:700;font-display:fallback;src:url('./fonts/poppins/poppins-bold.woff2') format('woff2');font-stretch:normal;}
+    @font-face{font-family:Poppins;font-style:normal;font-weight:400;font-display:swap;font-display:fallback;src:url('./fonts/poppins/poppins-regular.woff2?v1') format('woff2');font-stretch:normal;}
+    @font-face{font-family:Poppins;font-style:normal;font-weight:700;font-display:swap;font-display:fallback;src:url('./fonts/poppins/poppins-bold.woff2?v1') format('woff2');font-stretch:normal;}
     </style>
     <title>Empresas | Motorista PX</title>
     <meta name="description" content="Tenha o custo somente quando tem a demanda. Contrate seu Motorista PX em apenas 3 cliques!"/>
@@ -19,8 +21,12 @@
       <p>Com <strong>mais de 1235 Empresas</strong> utilizando nossa plataforma, a PX facilita o dia a dia da contratação de <strong>motoristas qualificados</strong> para a sua demanda, <strong>zerando custos extras</strong> e simplificando seus encargos.</p>
     </header>
     <div class="card">
-      <nav><a class="btn" href="#">Quero Motoristas</a> <span>ou</span> <a class="btn btn-accent" href="#">Quero Dirigir</a></nav>
-      <form action="">
+      <nav>
+        <a class="btn" href="#form">Quero Motoristas</a>
+        <span>ou</span>
+        <a class="btn btn-accent" href="https://cadastro.motoristapx.com.br/tour/motorista?utm_source=driver_site&utm_medium=Referral&utm_campaign=new_registration_flow">Quero Dirigir</a>
+      </nav>
+      <form id="form" action="/" method="POST">
         <div class="required">
           <label for="name">Seu nome <span>Required</span></label>
           <input type="text" name="name" id="name" placeholder="Nome e sobrenome" required autocomplete="name">
