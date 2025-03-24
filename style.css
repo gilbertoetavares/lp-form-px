@@ -187,16 +187,14 @@ nav {
     display: flex;
     flex-wrap: wrap;
     row-gap: 7px;
-    margin-right: auto;
-    margin-left: auto;
     @media (min-width: 480px) {
         flex-wrap: nowrap;
-    }
-    @media (min-width: 768px) {
-        width: 80%;
-    }
-    @media (min-width: 1024px) {
-        width: 100%;
+        justify-content: center;
+        > * {
+            width: 100%;
+            max-width: 100%;
+            flex: 1 0 0%;
+        }
     }
     .btn {
         font-size: 14px;
